@@ -1,0 +1,19 @@
+<module>
+	<rawname>whitelist</rawname>
+	<name>Whitelist</name>
+	<version>0.0.1</version>
+	<publisher>POSSA</publisher>
+	<license>GPLv2+</license>
+	<category>Admin</category>
+	<menuitems>
+		<whitelist>Whitelist</whitelist>
+	</menuitems>
+	<changelog>
+		*0.0.1* First release
+	</changelog>
+	<depends>
+		<module>core ge 2.5.1.2</module>
+		<module>phonebook</module>
+	</depends>
+
+</module>
