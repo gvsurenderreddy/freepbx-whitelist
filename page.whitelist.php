@@ -48,7 +48,38 @@ if(isset($_REQUEST['action'])) {
 	}
 }
 
+//if submitting form, update database
+if(isset($_POST['config'])) {
+	// add code here to save module config
+	needreload();
+	redirect_standard();
+	}
+
+
 ?>
+<form autocomplete="off" name="config" action="<?php $_SERVER['PHP_SELF'] ?>" method="post" onsubmit="return edit_onsubmit();">
+<table>
+
+
+	<tr><td colspan="2"><h5><?php echo _("Whitelist Module Configuration") ?><hr></h5></td></tr>
+	<tr>
+		<td><?php echo _("Destination for whitelisted calls")?>:</td>
+		<td><?php echo drawselects($dest1,0); ?></td>
+	</tr>
+	<tr>
+		<td><br><?php echo _("Destination non-whitelisted calls")?>:</td>
+		<td><?php echo drawselects($dest2,0); ?></td>
+	</tr>
+	<tr>	
+		<td><br><a href="#" class="info"><?php echo _("Allow Unknown/Blocked Caller ID to pass")?>
+		<span><?php echo _("Check here to allow Unknown/Blocked Caller ID")?></span></a></td>
+		<td><br><input type="checkbox" name="blocked" value="1" <?php echo ($filter_blocked === true?" checked=1":"");?></td>
+	</tr>
+	<tr>
+			<td colspan="2"><br><h6><input name="config" type="submit"  value="<?php echo _("Update Config")?>"></h6></td>
+	</tr>
+</form>
+
 <form autocomplete="off" name="edit" action="<?php $_SERVER['PHP_SELF'] ?>" method="post" onsubmit="return edit_onsubmit();">
 	<input type="hidden" name="display" value="<?php echo $dispnum?>">
 	<input type="hidden" name="action" value="add">
@@ -57,32 +88,29 @@ if(isset($_REQUEST['action'])) {
 	<?php if($ast_ge_16) {
     	    echo "<input type=\"hidden\" name=\"editdescripton\" value=\"\">";
 	    }?>
-	<table>
-	<tr><td colspan="2"><h5><?php echo _("Add or replace entry") ?><hr></h5></td></tr>
+	
+
+	<tr><td colspan="2"><h5><?php echo _("Add or replace Asterisk Phonebook entry") ?><hr></h5></td></tr>
 
         <tr>
     	        <td><a href="#" class="info"><?php echo _("Number/CallerID:")?>
-    		<span><?php echo _("Enter the number/CallerID you want to block")?></span></a></td>
+    		<span><?php echo _("Enter the number/CallerID you want to add to the Asterisk Phonebook")?></span></a></td>
                 <td><input type="text" name="number"></td>
         </tr>
         <?php if($ast_ge_16) {
     		echo "<tr>";
                 echo "<td><a href=\"#\" class=\"info\">"._("Description:");
-                echo "<span>"._("Enter a description for the number you want to block")."</span></a></td>";
+                echo "<span>"._("Enter a description for the number")."</span></a></td>";
                 echo "<td><input type=\"text\" name=\"description\"></td>";
         echo "</tr>";        
 	    }?>
 
-        <tr>
-                <td><a href="#" class="info"><?php echo _("Block Unknown/Blocked Caller ID:")?>
-                <span><?php echo _("Check here to catch Unknown/Blocked Caller ID")?></span></a></td>
-                <td><input type="checkbox" name="blocked" value="1" <?php echo ($filter_blocked === true?" checked=1":"");?></td>
-        </tr>
+        
 	</table>
 	<?php echo $module_hook->hookHtml;?>
 	<table>
 		<tr>
-			<td colspan="2"><br><h6><input name="submit" type="submit" value="<?php echo _("Submit Changes")?>"></h6></td>
+			<td colspan="2"><br><h6><input name="submit" type="submit" value="<?php echo _("Update Phonebook")?>"></h6></td>
 		</tr>
 	</table>
 </form>
@@ -90,14 +118,14 @@ if(isset($_REQUEST['action'])) {
 $numbers = whitelist_list();
 
 if ($action == 'delete') 
-	echo '<h3>'._("Blacklist entry").' '.$itemid.' '._("deleted").'!</h3>';
+	echo '<h3>'._("Asterisk Phonebook entry").' '.$itemid.' '._("deleted").'!</h3>';
 
 if (is_array($numbers)) {
 
 ?>
 <table cellpadding="5">
         <tr>
-		<td colspan="4"><h5><?php echo _("Blacklist entries") ?><hr></h5></td>
+		<td colspan="4"><h5><?php echo _("Asterisk Phonebook entries") ?><hr></h5></td>
 	</tr>
 
 	<tr>
@@ -118,10 +146,7 @@ if (is_array($numbers)) {
 // Why should I specify type=setup ???
 	$filter_blocked = false;
 	foreach ($numbers as $num)	{
-		if($num == "blocked")  { // Don't display the blocked/unknown CID as an item, but keep track of it for displaying the checkbox later
-			$filter_blocked = true;
-		}
-		else  {
+		
 		
     if($ast_ge_16) {
 			print('<tr>');
@@ -144,7 +169,7 @@ if (is_array($numbers)) {
 			printf('<td><a href="#" onClick="theForm.number.value = \'%s\'; theForm.editnumber.value = \'%s\' ; theForm.action.value = \'edit\' ; ">%s</a></td>',$num, $num, _("Edit"));
 			print('</tr>');
 			}
-		}
+		
 	}
 	print('</table>');
 }

@@ -209,7 +209,7 @@ $ast_ge_16 =  version_compare($amp_conf['ASTVERSION'], "1.6", "ge");
 		$list = $astman->database_show('cidname');
 		if($ast_ge_16) {
 		    foreach ($list as $k => $v) {
-			$numbers = substr($k, 11);
+			$numbers = substr($k, 9);
 			$whitelisted[] = array('number' => $numbers, 'description' => $v);
 			}
 		    if (isset($whitelisted) && is_array($whitelisted))
@@ -233,7 +233,7 @@ function whitelist_del($number){
 	global $amp_conf;
 	global $astman;
 	if ($astman) {
-		$astman->database_del("whitelist",$number);
+		$astman->database_del("cidname",$number);
 	} else {
 		fatal("Cannot connect to Asterisk Manager with ".$amp_conf["AMPMGRUSER"]."/".$amp_conf["AMPMGRPASS"]);
 	}
@@ -252,15 +252,15 @@ $ast_ge_16 =  version_compare($amp_conf['ASTVERSION'], "1.6", "ge");
 	if ($astman) {
 		if ($ast_ge_16) {
 		$post['description']==""?$post['description'] = '1':$post['description'];
-		$astman->database_put("whitelist",$post['number'], '"'.$post['description'].'"');
+		$astman->database_put("cidname",$post['number'], '"'.$post['description'].'"');
 		    } else {
-		    	    $astman->database_put("whitelist",$number, '1');
+		    	    $astman->database_put("cidname",$number, '1');
 		    	    }
-		// Remove filtering for blocked/unknown cid
-		$astman->database_del("whitelist","blocked");
+		
 		// Add it back if it's checked
 		if($post['blocked'] == "1")  {
-			$astman->database_put("whitelist","blocked", "1");
+
+// need to write this value to module table		
 			needreload();
 		}
 	} else {
