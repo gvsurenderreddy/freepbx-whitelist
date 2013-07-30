@@ -1,13 +1,12 @@
 <?php /* $Id */
 if (!defined('FREEPBX_IS_AUTH')) { die('No direct script access allowed'); }
-//This file is part of FreePBX.
-//
-//    FreePBX is free software: you can redistribute it and/or modify
+
+//    This is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 2 of the License, or
 //    (at your option) any later version.
 //
-//    FreePBX is distributed in the hope that it will be useful,
+//    This is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
@@ -15,9 +14,7 @@ if (!defined('FREEPBX_IS_AUTH')) { die('No direct script access allowed'); }
 //    You should have received a copy of the GNU General Public License
 //    along with FreePBX.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  Copyright (C) 2006 Magnus Ullberg (magnus@ullberg.us)
-//  Portions Copyright (C) 2010 Mikael Carlsson (mickecamino@gmail.com)
-//
+
 
 
 function whitelist_get_config($engine) {
@@ -33,17 +30,13 @@ function whitelist_get_config($engine) {
 
 			$id = "app-whitelist-check";
 			$c = "s";
-			// LookupBlackList doesn't seem to match empty astdb entry for "whitelist/", so we 
-			// need to check for the setting and if set, send to the whitelisted area
-			// The gotoif below is not a typo.  For some reason, we've seen the CID number set to Unknown or Unavailable
-			// don't generate the dialplan if they are not using the function
-			//
-			if ($astman->database_get("whitelist","blocked") == '1') {
-				$ext->add($id, $c, '', new ext_gotoif('$["${CALLERID(number)}" = "Unknown"]','check-blocked'));
-				$ext->add($id, $c, '', new ext_gotoif('$["${CALLERID(number)}" = "Unavailable"]','check-blocked'));
-				$ext->add($id, $c, '', new ext_gotoif('$["foo${CALLERID(number)}" = "foo"]','check-blocked','check'));
-				$ext->add($id, $c, 'check-blocked', new ext_gotoif('$["${DB(whitelist/blocked)}" = "1"]','whitelisted'));
-			}
+
+// rename from blocked to allowed
+			$ext->add($id, $c, '', new ext_gotoif('$["${CALLERID(number)}" = "Unknown"]','check-blocked'));
+			$ext->add($id, $c, '', new ext_gotoif('$["${CALLERID(number)}" = "Unavailable"]','check-blocked'));
+			$ext->add($id, $c, '', new ext_gotoif('$["foo${CALLERID(number)}" = "foo"]','check-blocked','check'));
+			$ext->add($id, $c, 'check-blocked', new ext_gotoif('$["${DB(whitelist/blocked)}" = "1"]','whitelisted'));
+
 			
 			if (version_compare($version, "1.6", "ge")) {
 				$ext->add($id, $c, 'check', new ext_gotoif('$["${BLACKLIST()}"="1"]', 'whitelisted'));
@@ -213,7 +206,7 @@ function whitelist_list() {
 
 $ast_ge_16 =  version_compare($amp_conf['ASTVERSION'], "1.6", "ge");
         if ($astman) {
-		$list = $astman->database_show('whitelist');
+		$list = $astman->database_show('cidname');
 		if($ast_ge_16) {
 		    foreach ($list as $k => $v) {
 			$numbers = substr($k, 11);
